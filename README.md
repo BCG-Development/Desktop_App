@@ -48,6 +48,10 @@ This application displays real-time system information and allows you to run int
 
 5. **Click the "Quit" button to close the application.**
 
+## Options
+
+- **Toggle Light/Dark Mode:** Click the "Toggle Light/Dark Mode" button to switch between light and dark mode.
+
 ## Notes
 
 - The application uses PySide6 for the GUI, psutil for system information retrieval, and speedtest for internet speed testing.
