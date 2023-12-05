@@ -23,7 +23,7 @@ This application displays real-time system information and allows you to run int
 2. **Navigate to the project directory:**
 
     ```bash
-    cd system-information-app
+    cd Desktop_App
     ```
 
 3. **Install the required dependencies:**
