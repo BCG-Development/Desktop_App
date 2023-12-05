@@ -17,7 +17,7 @@ This application displays real-time system information and allows you to run int
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/yourusername/system-information-app.git
+    git clone https://github.com/BCG-Development/Desktop_App.git
     ```
 
 2. **Navigate to the project directory:**
