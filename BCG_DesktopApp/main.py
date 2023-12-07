@@ -4,6 +4,7 @@ import psutil
 import platform
 import speedtest
 from datetime import datetime
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QWidget,
@@ -23,7 +24,6 @@ class SystemInfoRetrievalThread(QThread):
         super().__init__()
         self.speed_test_requested = False
         self.last_speed_test_time = None
-        self_last_speed_test_result = None
 
     def run(self):
         while not self.isInterruptionRequested():
@@ -90,6 +90,9 @@ class SystemInfoApp(QWidget):
         super().__init__()
 
         self.init_ui()
+        
+        icon_path = os.path.abspath("BCG_DesktopApp/Images/Icon.png")
+        self.setWindowIcon(QIcon(icon_path))
 
         self.thread = SystemInfoRetrievalThread()
         self.thread.update_signal.connect(self.update_info_label)
@@ -153,6 +156,9 @@ class SystemInfoApp(QWidget):
         self.quit_button = QPushButton("Quit", self)
         self.quit_button.clicked.connect(self.close)
         layout.addWidget(self.quit_button)
+
+        # Set window opacity
+        self.setWindowOpacity(0.9)
 
     def update_info_label(self, system_info):
         self.info_label.setText(system_info)
