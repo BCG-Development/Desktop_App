@@ -21,11 +21,17 @@ class SystemInfoRetrievalThread(QThread):
     speed_test_complete_signal = Signal(float, str)
 
     def __init__(self):
+        """
+        A background thread for retrieving system information and performing speed tests.
+        """
         super().__init__()
         self.speed_test_requested = False
         self.last_speed_test_time = None
 
     def run(self):
+        """
+        The main loop of the thread.
+        """
         while not self.isInterruptionRequested():
             try:
                 system_info = self.get_system_info()
@@ -44,6 +50,9 @@ class SystemInfoRetrievalThread(QThread):
             self.msleep(1000)
 
     def get_system_info(self):
+        """
+        Retrieve various system information such as network, uptime, and processes count.
+        """
         network_info = psutil.net_io_counters()
         uptime = self.get_uptime()
         processes_count = self.get_processes_count()
@@ -58,6 +67,9 @@ class SystemInfoRetrievalThread(QThread):
         )
 
     def get_size(self, bytes):
+        """
+        Convert bytes to human-readable size.
+        """
         sizes = ['B', 'KB', 'MB', 'GB', 'TB']
         for size in sizes:
             if bytes < 1024:
@@ -66,6 +78,9 @@ class SystemInfoRetrievalThread(QThread):
         return f"{bytes:.2f} TB"
 
     def get_uptime(self):
+        """
+        Calculate system uptime.
+        """
         process_create_time = psutil.Process(os.getpid()).create_time()
         uptime_seconds = psutil.time.time() - process_create_time
         minutes, _ = divmod(uptime_seconds, 60)
@@ -74,19 +89,31 @@ class SystemInfoRetrievalThread(QThread):
         return f"{days} days, {hours} hours, {minutes} minutes"
 
     def get_speed_test(self):
+        """
+        Perform a speed test and return the download speed in Mbps.
+        """
         st = speedtest.Speedtest()
         st.get_best_server()  # Choose the best server automatically
         download_speed = st.download() / 1024 / 1024  # Convert to Mbps
         return download_speed
 
     def request_speed_test(self):
+        """
+        Request a speed test to be performed.
+        """
         self.speed_test_requested = True
 
     def get_processes_count(self):
+        """
+        Get the number of running processes.
+        """
         return len(list(psutil.process_iter()))
 
 class SystemInfoApp(QWidget):
     def __init__(self):
+        """
+        The main application window for displaying system information.
+        """
         super().__init__()
 
         self.init_ui()
@@ -106,6 +133,9 @@ class SystemInfoApp(QWidget):
         self.dark_mode = False
 
     def init_ui(self):
+        """
+        Initialize the user interface.
+        """
         self.setWindowTitle("System Information")
         self.setGeometry(100, 100, 500, 250)
 
@@ -161,6 +191,9 @@ class SystemInfoApp(QWidget):
         self.setWindowOpacity(0.9)
 
     def update_info_label(self, system_info):
+        """
+        Update the information label based on the received system information.
+        """
         self.info_label.setText(system_info)
 
         # Update progress bars
@@ -173,29 +206,50 @@ class SystemInfoApp(QWidget):
         self.disk_progress_bar.setValue(disk_percent)
 
     def update_speed_test_info(self, speed_info, last_speed_test_time):
+        """
+        Update the last speed test label with the result and timestamp.
+        """
         self.last_speed_test_label.setText(f"Last Speed Test ({last_speed_test_time}): {speed_info:.2f} Mbps")
 
     def check_thread(self):
+        """
+        Check if the background thread is still running.
+        """
         if not self.thread.isRunning():
             self.check_thread_timer.stop()
             self.info_label.setText("Thread stopped. Check your system.")
 
     def refresh_info(self):
+        """
+        Refresh the displayed system information.
+        """
         self.thread.get_system_info()
 
     def request_speed_test(self):
+        """
+        Request a speed test to be performed.
+        """
         self.thread.request_speed_test()
 
     def closeEvent(self, event):
+        """
+        Handle the closing event by requesting the interruption of the background thread.
+        """
         self.thread.requestInterruption()
         self.thread.wait()
         event.accept()
 
     def toggle_dark_mode(self):
+        """
+        Toggle the dark mode and apply the corresponding color palette.
+        """
         self.dark_mode = not self.dark_mode
         self.apply_dark_mode()
 
     def apply_dark_mode(self):
+        """
+        Apply the dark or light color palette based on the current mode.
+        """
         palette = self.palette()
 
         if self.dark_mode:
